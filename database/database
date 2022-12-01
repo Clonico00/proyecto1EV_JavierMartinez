@@ -1,0 +1,32 @@
+CREATE DATABASE IF NOT EXISTS `senderismo` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE senderismo;
+
+DROP TABLE IF EXISTS rutas;
+CREATE TABLE IF NOT EXISTS rutas
+(
+    id          int(11) auto_increment not null,
+    titulo      varchar(55)            not null,
+    descripcion blob                   not null,
+    desnivel    int(6) unsigned        not null,
+    distancia   double                 not null,
+    notas       blob                   not null,
+    dificultad  smallint(5) unsigned   not null,
+    CONSTRAINT pk_rutas PRIMARY KEY (id)
+) ENGINE = InnoDb
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_bin;
+
+
+DROP TABLE IF EXISTS rutas_comentarios;
+CREATE TABLE IF NOT EXISTS rutas_comentarios
+(
+    id      smallint(6) not null auto_increment,
+    id_ruta int(11)     not null,
+    nombre  varchar(50) not null,
+    texto   blob        not null,
+    fecha   date        not null,
+    CONSTRAINT pk_rutas_comentarios PRIMARY KEY (id),
+    CONSTRAINT fk_rutas_comentarios_rutas FOREIGN KEY (id_ruta) REFERENCES rutas (id)
+) ENGINE = InnoDb
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_bin;
