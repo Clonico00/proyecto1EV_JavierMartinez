@@ -1,32 +1,36 @@
 <?php
 namespace Controllers;
+
 class FrontController {
-    public static function main(){
-        function show_error(){
+
+    public static function main() : void {
+        function show_error() : void {
             $error = new ErrorController();
             $error->index();
         }
-        if(isset($_GET['controller'])) {
-            $nombre_controlador = 'Controllers\\'. $_GET['controller'] . 'Controller';
+        if (isset($_GET['controller'])) {
+            $nombre_controlador = "Controllers\\" . $_GET['controller'] . "Controller";
 
-        }elseif (!isset($_GET['controller']) && !isset($_GET['action'])){
+        } else if (!isset($_GET['action'])) {
             $nombre_controlador = controller_default;
-        }else{
+        } else {
             show_error();
             exit();
         }
-        if(class_exists($nombre_controlador)){
+
+        if (class_exists($nombre_controlador)) {
             $controlador = new $nombre_controlador();
-            if(isset($_GET['action']) && method_exists($controlador, $_GET['action'])){
+
+            if (isset($_GET['action']) && method_exists($controlador, $_GET['action'])) {
                 $action = $_GET['action'];
                 $controlador->$action();
-            }elseif (!isset($_GET['controller']) && !isset($_GET['action'])){
+            } else if (!isset($_GET['action']) && !isset($_GET['controller'])) {
                 $action_default = action_default;
                 $controlador->$action_default();
-            }else{
+            } else {
                 show_error();
             }
-        }else{
+        } else {
             show_error();
         }
     }

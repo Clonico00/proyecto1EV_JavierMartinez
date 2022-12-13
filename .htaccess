@@ -1,7 +1,5 @@
 <IfModule mod_rewrite.c>
-# Activar rewrite
-RewriteEngine on
-ErrorDocument 404 http://clinica/Error/index
+RewriteEngine On
 
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-f
