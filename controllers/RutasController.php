@@ -1,10 +1,12 @@
 <?php
 
 namespace Controllers;
+
 use Lib\Pages;
 use models\Rutas;
 
-class RutasController{
+class RutasController
+{
     private Pages $pages;
     private Rutas $rutas;
 
@@ -14,11 +16,13 @@ class RutasController{
         $this->rutas = new Rutas();
     }
 
-    public function default(){
+    public function default()
+    {
 
     }
 
-    public function busqueda(){
+    public function busqueda()
+    {
         $campo = $_POST['campos'];
         $valor = $_POST['busquedaCampo'];
         $sql = "SELECT * FROM senderismo.rutas WHERE $campo LIKE '%$valor%'";
@@ -34,7 +38,9 @@ class RutasController{
             header('Location: index.php?controller=Rutas&action=verTodas');
         }
     }
-    public function eliminar(){
+
+    public function eliminar()
+    {
         $id = $_POST['id'];
         /*eliminamos los comentarios asociados a esza ruta*/
         $sql = "DELETE FROM senderismo.rutas_comentarios WHERE id_ruta = :id";
@@ -55,7 +61,8 @@ class RutasController{
 
     }
 
-    public function modificar(){
+    public function modificar()
+    {
         /*mostraremos un formulario con todos los campos, y en estos estaran los valores de la ruta, al enviar el form, se actualizara su valor*/
         $id = $_POST['id'];
         $sql = "SELECT * FROM senderismo.rutas WHERE senderismo.rutas.id = :id";
@@ -73,7 +80,8 @@ class RutasController{
         }
     }
 
-    public function actualizar(){
+    public function actualizar()
+    {
         /*recogemos los datos que estan data*/
         $data = $_POST['data'];
         $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, desnivel = :desnivel, distancia = :distancia, dificultad = :dificultad, notas = :notas WHERE senderismo.rutas.id = :id";
@@ -93,7 +101,8 @@ class RutasController{
 
     }
 
-    public function verTodas(){
+    public function verTodas()
+    {
         $sql = "SELECT * FROM senderismo.rutas";
         $consult = $this->rutas->conexion->prepare($sql);
         if ($consult->execute()) {
@@ -108,11 +117,13 @@ class RutasController{
         }
     }
 
-    public function crear(){
+    public function crear()
+    {
         $this->pages->render('../views/rutas/crear');
     }
 
-    public function insertar(){
+    public function insertar()
+    {
         $data = $_POST['data'];
         $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
         $consult = $this->rutas->conexion->prepare($sql);
@@ -123,9 +134,70 @@ class RutasController{
         $consult->bindParam(':dificultad', $data['dificultad']);
         $consult->bindParam(':notas', $data['notas']);
         if ($consult->execute()) {
-            $this->pages->render('verTodas');
+            header('Location: index.php?controller=Rutas&action=verTodas');
         } else {
-            $this->pages->render('verTodas');
+            header('Location: index.php?controller=Rutas&action=verTodas');
+        }
+    }
+
+    public function comentar()
+    {
+        $id = $_POST['id'];
+        $sql = "SELECT * FROM senderismo.rutas WHERE senderismo.rutas.id = :id";
+        $consult = $this->rutas->conexion->prepare($sql);
+        $consult->bindParam(':id', $id);
+        if ($consult->execute()) {
+            $result = $consult->fetch();
+            if ($result) {
+                //comprobamos que existe la ruta, ahora mostramos los comentarios
+                $sql = "SELECT * FROM senderismo.rutas_comentarios WHERE senderismo.rutas_comentarios.id_ruta = :id ORDER BY senderismo.rutas_comentarios.fecha DESC";
+                $consult = $this->rutas->conexion->prepare($sql);
+                $consult->bindParam(':id', $id);
+                if ($consult->execute()) {
+                    $result2 = $consult->fetchAll();
+                    //si hay comentarios se los pasamos a la vista
+                    if ($result2) {
+                        $this->pages->render('../views/rutas/comentar', ['ruta' => $result, 'comentarios' => $result2]);
+                    } else {
+                        $this->pages->render('../views/rutas/comentar', ['ruta' => $result, 'comentarios' => null]);
+                    }
+                }
+            } else {
+                header('Location: index.php?controller=Rutas&action=verTodas');
+            }
+        } else {
+            header('Location: index.php?controller=Rutas&action=verTodas');
+        }
+    }
+
+    public function insertarComentario()
+    {
+        /* primero comprobamos que no haya un comentario con el mismo nombre y la misma fecha, de ser asi le mandamos de vuelta a la comentar.php */
+        $data = $_POST['data'];
+        $sql = "SELECT * FROM senderismo.rutas_comentarios WHERE senderismo.rutas_comentarios.id_ruta = :id_ruta AND senderismo.rutas_comentarios.nombre = :nombre AND senderismo.rutas_comentarios.fecha = :fecha";
+        $consult = $this->rutas->conexion->prepare($sql);
+        $consult->bindParam(':id_ruta', $data['id_ruta']);
+        $consult->bindParam(':nombre', $data['nombre']);
+        $consult->bindParam(':fecha', $data['fecha']);
+        if ($consult->execute()) {
+            $result = $consult->fetch();
+            if ($result) {
+                echo "<h3 style='color: red'>Ya existe un comentario con ese nombre y fecha</h3>";
+            } else {
+                $sql = "INSERT INTO senderismo.rutas_comentarios (id_ruta, nombre, texto, fecha) VALUES (:id_ruta, :nombre, :texto, :fecha)";
+                $consult = $this->rutas->conexion->prepare($sql);
+                $consult->bindParam(':id_ruta', $data['id_ruta']);
+                $consult->bindParam(':nombre', $data['nombre']);
+                $consult->bindParam(':texto', $data['comentario']);
+                $consult->bindParam(':fecha', $data['fecha']);
+                if ($consult->execute()) {
+                    echo "Comentario insertado";
+                } else {
+                    echo "Error al insertar el comentario";
+                }
+            }
+        } else {
+            header('Location: index.php?controller=Rutas&action=comentar&id=' . $data['id_ruta']);
         }
     }
 

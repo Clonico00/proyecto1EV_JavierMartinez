@@ -8,6 +8,7 @@
         <option >Desnivel</option>
         <option >Distancia</option>
         <option >Dificultad</option>
+        <option >Notas</option>
     </select>
     <input type="text" name="busquedaCampo">
     <input type="submit" name="enviar" value="Enviar">

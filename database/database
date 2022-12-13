@@ -40,7 +40,7 @@ VALUES ('Ruta del Oso', 'Una emocionante ruta por el Parque Nacional de la Sierr
 
 /*hacemos un insert en rutas_comentarios para el id 2*/
 INSERT INTO rutas_comentarios (id_ruta, nombre, texto, fecha)
-VALUES (2, 'Juan', 'Un sendero precioso', '2018-01-01'),
-       (2, 'Ana', 'Un sendero precioso', '2018-01-01'),
-       (2, 'Pedro', 'Un sendero precioso', '2018-01-01'),
-       (2, 'Luis', 'Un sendero precioso', '2018-01-01');
+VALUES (3, 'Juan', 'Un sendero precioso', '2018-01-01'),
+       (3, 'Ana', 'Un sendero precioso', '2018-01-01'),
+       (3, 'Pedro', 'Un sendero precioso', '2018-01-01'),
+       (3, 'Luis', 'Un sendero precioso', '2018-01-01');

@@ -6,6 +6,7 @@
         <th>Desnivel</th>
         <th>Distancia</th>
         <th>Dificultad</th>
+        <th>Notas</th>
         <th>Operaciones</th>
     </tr>
     </thead>
@@ -19,6 +20,7 @@
                 <td><?= $ruta['desnivel']; ?></td>
                 <td><?= $ruta['distancia']; ?></td>
                 <td><?= $ruta['dificultad']; ?></td>
+                <td><?= $ruta['notas']; ?></td>
                 <td>
                     <br>
                     <form action="index.php?controller=Rutas&action=comentar" method="post">
