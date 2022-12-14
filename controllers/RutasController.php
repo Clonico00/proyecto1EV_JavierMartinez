@@ -91,12 +91,12 @@ class RutasController
         } else if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $data['distancia'])) {
             $this->pages->render('../views/rutas/modificar', ['error' => 'ERROR: El formato del campo Distancia es incorrecto.']);
         } else {
-            if (htmlspecialchars($data['titulo'], ENT_QUOTES, 'UTF-8')) {
-                $data['titulo'] = filter_var($data['titulo'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-                if (htmlspecialchars($data['descripcion'], ENT_QUOTES, 'UTF-8')) {
-                    $data['descripcion'] = filter_var($data['descripcion'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-                    if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8')) {
-                        $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+            $data['titulo'] = filter_var($data['titulo'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+            if (htmlspecialchars($data['titulo'], ENT_QUOTES, 'UTF-8') && $data['titulo']) {
+                $data['descripcion'] = filter_var($data['descripcion'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                if (htmlspecialchars($data['descripcion'], ENT_QUOTES, 'UTF-8') && $data['descripcion']) {
+                    $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                    if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8') && $data['desnivel']) {
                         $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, desnivel = :desnivel, distancia = :distancia, dificultad = :dificultad, notas = :notas WHERE senderismo.rutas.id = :id";
                         $consult = $this->rutas->conexion->prepare($sql);
                         $consult->bindParam(':id', $data['id']);
@@ -155,12 +155,12 @@ class RutasController
         } else if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $data['distancia'])) {
             $this->pages->render('../views/rutas/crear', ['error' => 'ERROR: El formato del campo Distancia es incorrecto.']);
         } else {
-            if (htmlspecialchars($data['titulo'], ENT_QUOTES, 'UTF-8')) {
-                $data['titulo'] = filter_var($data['titulo'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-                if (htmlspecialchars($data['descripcion'], ENT_QUOTES, 'UTF-8')) {
-                    $data['descripcion'] = filter_var($data['descripcion'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-                    if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8')) {
-                        $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+            $data['titulo'] = filter_var($data['titulo'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+            if (htmlspecialchars($data['titulo'], ENT_QUOTES, 'UTF-8') && $data['titulo']) {
+                $data['descripcion'] = filter_var($data['descripcion'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                if (htmlspecialchars($data['descripcion'], ENT_QUOTES, 'UTF-8') && $data['descripcion']) {
+                    $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                    if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8') && $data['desnivel']) {
                         $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
                         $consult = $this->rutas->conexion->prepare($sql);
                         $consult->bindParam(':titulo', $data['titulo']);
@@ -230,27 +230,33 @@ class RutasController
             if ($result) {
                 echo "<h3 style='color: red'>Ya existe un comentario con ese nombre y fecha</h3>";
             } else {
-                if (htmlspecialchars($data['nombre'], ENT_QUOTES, 'UTF-8')) {
+                /*comprobamos que la fecha esta bien*/
+                if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $data['fecha'])) {
                     $data['nombre'] = filter_var($data['nombre'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-                    if (htmlspecialchars($data['comentario'], ENT_QUOTES, 'UTF-8')) {
+                    if (htmlspecialchars($data['nombre'], ENT_QUOTES, 'UTF-8') && $data['nombre']) {
                         $data['comentario'] = filter_var($data['comentario'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-                        $sql = "INSERT INTO senderismo.rutas_comentarios (id_ruta, nombre, fecha, texto) VALUES (:id_ruta, :nombre, :fecha, :comentario)";
-                        $consult = $this->rutas->conexion->prepare($sql);
-                        $consult->bindParam(':id_ruta', $data['id_ruta']);
-                        $consult->bindParam(':nombre', $data['nombre']);
-                        $consult->bindParam(':fecha', $data['fecha']);
-                        $consult->bindParam(':comentario', $data['comentario']);
-                        if ($consult->execute()) {
-                            header('Location: index.php?controller=Rutas&action=comentar&id=' . $data['id_ruta']);
+                        if (htmlspecialchars($data['comentario'], ENT_QUOTES, 'UTF-8') && $data['comentario']) {
+                            $sql = "INSERT INTO senderismo.rutas_comentarios (id_ruta, nombre, fecha, texto) VALUES (:id_ruta, :nombre, :fecha, :comentario)";
+                            $consult = $this->rutas->conexion->prepare($sql);
+                            $consult->bindParam(':id_ruta', $data['id_ruta']);
+                            $consult->bindParam(':nombre', $data['nombre']);
+                            $consult->bindParam(':fecha', $data['fecha']);
+                            $consult->bindParam(':comentario', $data['comentario']);
+                            if ($consult->execute()) {
+                                header('Location: index.php?controller=Rutas&action=comentar&id=' . $data['id_ruta']);
+                            } else {
+                                header('Location: index.php?controller=Rutas&action=comentar&id=' . $data['id_ruta']);
+                            }
                         } else {
-                            header('Location: index.php?controller=Rutas&action=comentar&id=' . $data['id_ruta']);
+                            echo "<h3 style='color: red'>ERROR: El formato del campo Comentario es incorrecto.</h3>";
                         }
                     } else {
-                        $this->pages->render('../views/rutas/comentar', ['error' => 'ERROR: El formato del campo Comentario es incorrecto.']);
+                        echo "<h3 style='color: red'>ERROR: El formato del campo Nombre es incorrecto.</h3>";
                     }
-                } else {
-                    $this->pages->render('../views/rutas/comentar', ['error' => 'ERROR: El formato del campo Nombre es incorrecto.']);
+                }else{
+                    echo "<h3 style='color: red'>ERROR: El formato del campo Fecha es incorrecto.</h3>";
                 }
+
 
             }
         } else {
