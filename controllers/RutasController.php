@@ -82,21 +82,28 @@ class RutasController
 
     public function actualizar()
     {
-        /*recogemos los datos que estan data*/
         $data = $_POST['data'];
-        $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, desnivel = :desnivel, distancia = :distancia, dificultad = :dificultad, notas = :notas WHERE senderismo.rutas.id = :id";
-        $consult = $this->rutas->conexion->prepare($sql);
-        $consult->bindParam(':id', $data['id']);
-        $consult->bindParam(':titulo', $data['titulo']);
-        $consult->bindParam(':descripcion', $data['descripcion']);
-        $consult->bindParam(':desnivel', $data['desnivel']);
-        $consult->bindParam(':distancia', $data['distancia']);
-        $consult->bindParam(':dificultad', $data['dificultad']);
-        $consult->bindParam(':notas', $data['notas']);
-        if ($consult->execute()) {
-            header('Location: index.php?controller=Rutas&action=verTodas');
+        if (empty($data['titulo'])) {
+            $this->pages->render('../views/rutas/modificar', ['error' => 'No se puede realizar la operación: el campo \'Título\' es obligatorio.']);
+        } else if (empty($data['descripcion']) || empty($data['desnivel'])) {
+            $this->pages->render('../views/rutas/modificar', ['error' => 'No se puede realizar la operación: el campo \'Descripción/Desnivel es obligatorio.\'']);
+        } else if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $data['distancia'])) {
+            $this->pages->render('../views/rutas/modificar', ['error' => 'ERROR: El formato del campo Distancia es incorrecto.']);
         } else {
-            header('Location: index.php?controller=Rutas&action=verTodas');
+            $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, desnivel = :desnivel, distancia = :distancia, dificultad = :dificultad, notas = :notas WHERE senderismo.rutas.id = :id";
+            $consult = $this->rutas->conexion->prepare($sql);
+            $consult->bindParam(':id', $data['id']);
+            $consult->bindParam(':titulo', $data['titulo']);
+            $consult->bindParam(':descripcion', $data['descripcion']);
+            $consult->bindParam(':desnivel', $data['desnivel']);
+            $consult->bindParam(':distancia', $data['distancia']);
+            $consult->bindParam(':dificultad', $data['dificultad']);
+            $consult->bindParam(':notas', $data['notas']);
+            if ($consult->execute()) {
+                header('Location: index.php?controller=Rutas&action=verTodas');
+            } else {
+                header('Location: index.php?controller=Rutas&action=verTodas');
+            }
         }
 
     }
@@ -125,18 +132,26 @@ class RutasController
     public function insertar()
     {
         $data = $_POST['data'];
-        $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
-        $consult = $this->rutas->conexion->prepare($sql);
-        $consult->bindParam(':titulo', $data['titulo']);
-        $consult->bindParam(':descripcion', $data['descripcion']);
-        $consult->bindParam(':desnivel', $data['desnivel']);
-        $consult->bindParam(':distancia', $data['distancia']);
-        $consult->bindParam(':dificultad', $data['dificultad']);
-        $consult->bindParam(':notas', $data['notas']);
-        if ($consult->execute()) {
-            header('Location: index.php?controller=Rutas&action=verTodas');
+        if (empty($data['titulo'])) {
+            $this->pages->render('../views/rutas/crear', ['error' => 'No se puede realizar la operación: el campo \'Título\' es obligatorio.']);
+        } else if (empty($data['descripcion']) || empty($data['desnivel'])) {
+            $this->pages->render('../views/rutas/crear', ['error' => 'No se puede realizar la operación: el campo \'Descripción/Desnivel es obligatorio.\'']);
+        } else if (!preg_match('/^[0-9]+(\.[0-9]+)?$/', $data['distancia'])) {
+            $this->pages->render('../views/rutas/crear', ['error' => 'ERROR: El formato del campo Distancia es incorrecto.']);
         } else {
-            header('Location: index.php?controller=Rutas&action=verTodas');
+            $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
+            $consult = $this->rutas->conexion->prepare($sql);
+            $consult->bindParam(':titulo', $data['titulo']);
+            $consult->bindParam(':descripcion', $data['descripcion']);
+            $consult->bindParam(':desnivel', $data['desnivel']);
+            $consult->bindParam(':distancia', $data['distancia']);
+            $consult->bindParam(':dificultad', $data['dificultad']);
+            $consult->bindParam(':notas', $data['notas']);
+            if ($consult->execute()) {
+                header('Location: index.php?controller=Rutas&action=verTodas');
+            } else {
+                header('Location: index.php?controller=Rutas&action=verTodas');
+            }
         }
     }
 
