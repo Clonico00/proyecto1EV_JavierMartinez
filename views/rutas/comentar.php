@@ -30,6 +30,7 @@
     </table>
 
     <?php
+    session_start();
     ?>
     <div class="tablacomentarios">
         <table>
@@ -40,7 +41,7 @@
             </tr>
             <tr>
                 <form action="index.php?controller=Rutas&action=insertarComentario" method="post">
-                    <td><input type="text" name="data[nombre]" required></td>
+                    <td><input type="text" name="data[nombre]" value="<?= $_SESSION['nombre']; ?>" required></td>
                     <td><input type="text" name="data[fecha]" value="<?= date('Y-m-d'); ?>"></td>
                     <td id="comentar"><input type="text" name="data[comentario]" required><input type="hidden"
                                                                                                  name="data[id_ruta]"

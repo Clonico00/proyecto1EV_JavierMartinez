@@ -61,3 +61,6 @@ VALUES (3, 'Juan', 'Un sendero precioso', '2018-01-01'),
        (3, 'Ana', 'Un sendero precioso', '2018-01-01'),
        (3, 'Pedro', 'Un sendero precioso', '2018-01-01'),
        (3, 'Luis', 'Un sendero precioso', '2018-01-01');
+
+/*hazme un select para saber si una cadena de texto se encuentra en algu valor de la columna descripcion usando like y que de igual si esta en mayuscula o minuscula*/
+SELECT * FROM rutas WHERE lower(descripcion) LIKE lower('%av%');

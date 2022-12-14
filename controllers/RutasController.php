@@ -20,10 +20,9 @@ class RutasController
     {
         $campo = $_POST['campos'];
         $valor = $_POST['busquedaCampo'];
-        //validamos los campos usando los filtros de sanitizacion de php y los filtros de validacion de php
         if (htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')) {
-            $valor = filter_var($valor, FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
-            $sql = "SELECT * FROM senderismo.rutas WHERE UPPER($campo) LIKE UPPER('%$valor%')";
+            $valor = filter_var($valor, FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+$/")));
+            $sql = "SELECT * FROM senderismo.rutas WHERE lower($campo) LIKE lower('%$valor%')";
             $consult = $this->rutas->conexion->prepare($sql);
             if ($consult->execute()) {
                 $result = $consult->fetchAll();
@@ -126,12 +125,17 @@ class RutasController
 
     public function verTodas()
     {
+        session_start();
         $sql = "SELECT * FROM senderismo.rutas";
         $consult = $this->rutas->conexion->prepare($sql);
         if ($consult->execute()) {
             $result = $consult->fetchAll();
             if ($result) {
-                $this->pages->render('../views/rutas/mostrarTodas', ['rutas' => $result]);
+                if (isset($_SESSION['usuario'])) {
+                    $this->pages->render('../views/rutas/mostrarTodas', ['rutas' => $result, 'logeado' => true]);
+                } else {
+                    $this->pages->render('../views/rutas/mostrarTodas', ['rutas' => $result, 'logeado' => false]);
+                }
             } else {
                 $this->pages->render('../views/rutas/mostrar', ['rutas' => null]);
             }
@@ -324,4 +328,42 @@ class RutasController
         }
     }
 
+    public function logearse()
+    {
+        $this->pages->render('../views/rutas/logearse');
     }
+
+    public function login()
+    {
+        session_start();
+        $data = $_POST['data'];
+        $sql = "SELECT * FROM senderismo.usuarios WHERE senderismo.usuarios.usuario = :usuario";
+        $consult = $this->rutas->conexion->prepare($sql);
+        $consult->bindParam(':usuario', $data['usuario']);
+        if ($consult->execute()) {
+            $result = $consult->fetch();
+            if ($result) {
+                if (password_verify($data['password'], $result['pass'])) {
+                    $_SESSION['usuario'] = $result['usuario'];
+                    $_SESSION['nombre'] = $result['nombre'];
+                    $_SESSION['apellidos'] = $result['apellidos'];
+                    $_SESSION['email'] = $result['email'];
+                    header('Location: index.php?controller=Rutas&action=verTodas');
+                } else {
+                    $this->pages->render('../views/rutas/logearse', ['error' => 'ERROR: La contraseña es incorrecta.']);
+                }
+            } else {
+                $this->pages->render('../views/rutas/logearse', ['error' => 'ERROR: No existe ningún usuario con ese nombre.']);
+            }
+        } else {
+            header('Location: index.php?controller=Rutas&action=logearse');
+        }
+    }
+
+    public function logout()
+    {
+        session_start();
+        session_destroy();
+        header('Location: index.php?controller=Rutas&action=verTodas');
+    }
+}

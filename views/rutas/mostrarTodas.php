@@ -24,19 +24,34 @@
                     <td><?= $ruta['dificultad']; ?></td>
                     <td><?= $ruta['notas']; ?></td>
                     <td>
-                        <br>
-                        <form action="index.php?controller=Rutas&action=comentar" method="post">
-                            <input type="hidden" name="id" value="<?= $ruta['id']; ?>">
-                            <input type="submit" name="enviar" value="Comentar">
-                        </form>
-                        <form action="index.php?controller=Rutas&action=eliminar" method="post">
-                            <input type="hidden" name="id" value="<?= $ruta['id']; ?>">
-                            <input type="submit" name="enviar" value="Eliminar">
-                        </form>
-                        <form action="index.php?controller=Rutas&action=modificar" method="post">
-                            <input type="hidden" name="id" value="<?= $ruta['id']; ?>">
-                            <input type="submit" name="enviar" value="Modificar">
-                        </form>
+                        <?php
+                        /* comprobamos $error para mostrarle el form o no
+                         * */
+                        if (isset($logeado)) {
+                            if ($logeado) {
+                                ?>
+                                <br>
+                                <form action="index.php?controller=Rutas&action=comentar" method="post">
+                                    <input type="hidden" name="id" value="<?= $ruta['id']; ?>">
+                                    <input type="submit" name="enviar" value="Comentar">
+                                </form>
+                                <form action="index.php?controller=Rutas&action=eliminar" method="post">
+                                    <input type="hidden" name="id" value="<?= $ruta['id']; ?>">
+                                    <input type="submit" name="enviar" value="Eliminar">
+                                </form>
+                                <form action="index.php?controller=Rutas&action=modificar" method="post">
+                                    <input type="hidden" name="id" value="<?= $ruta['id']; ?>">
+                                    <input type="submit" name="enviar" value="Modificar">
+                                </form>
+                                <?php
+                            } else {
+                                echo "Debes estar logeado para comentar";
+                            }
+                        }
+                        ?>
+
+                        </td>
+
                 </tr>
             <?php endforeach;
         } else {
