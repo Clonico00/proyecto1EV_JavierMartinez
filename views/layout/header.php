@@ -14,6 +14,9 @@
         <input type="text" name="busquedaCampo">
         <input type="submit" name="enviar" value="Enviar">
     </form>
+    <form action="index.php?controller=Rutas&action=registrarse" method="post">
+        <input type="submit" name="enviar" value="Registrarse" id="registro">
+    </form>
     <form action="index.php?controller=Rutas&action=crear" method="post">
         <input type="submit" name="enviar" value="Crear Nueva Ruta" id="crear">
     </form>

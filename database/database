@@ -31,6 +31,23 @@ CREATE TABLE IF NOT EXISTS rutas_comentarios
   DEFAULT CHARSET = utf8
   COLLATE = utf8_bin;
 
+DROP TABLE IF EXISTS usuarios;
+CREATE TABLE IF NOT EXISTS usuarios
+(
+    usuario     varchar(55)            not null,
+    pass        varchar(55)            not null,
+    nombre      varchar(55)            not null,
+    apellidos   varchar(55)            not null,
+    email       varchar(55)            not null,
+
+    CONSTRAINT pk_usuarios PRIMARY KEY (usuario)
+) ENGINE = InnoDb
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_bin;
+
+INSERT INTO usuarios ( usuario, pass,nombre, apellidos, email) VALUES ('javi', '123456',  'javi', 'martinez garcia','javi@gmail.com');
+
+
 INSERT INTO rutas (titulo, descripcion, desnivel, distancia, notas, dificultad)
 VALUES ('Ruta del Oso', 'Una emocionante ruta por el Parque Nacional de la Sierra de Guadarrama', 1200, 12.5, 'Llevar ropa y calzado adecuado', 3),
        ('Sendero de la Montaña', 'Un precioso sendero por los bosques de la sierra', 800, 8.0, 'Recomendable ir en grupo', 2),

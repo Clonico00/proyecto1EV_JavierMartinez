@@ -253,7 +253,7 @@ class RutasController
                     } else {
                         echo "<h3 style='color: red'>ERROR: El formato del campo Nombre es incorrecto.</h3>";
                     }
-                }else{
+                } else {
                     echo "<h3 style='color: red'>ERROR: El formato del campo Fecha es incorrecto.</h3>";
                 }
 
@@ -264,4 +264,64 @@ class RutasController
         }
     }
 
-}
+    public function registrarse()
+    {
+        $this->pages->render('../views/rutas/registrarse');
+    }
+
+    public function registro()
+    {
+        $data = $_POST['data'];
+        $sql = "SELECT * FROM senderismo.usuarios WHERE senderismo.usuarios.usuario = :usuario";
+        $consult = $this->rutas->conexion->prepare($sql);
+        $consult->bindParam(':usuario', $data['usuario']);
+        if ($consult->execute()) {
+            $result = $consult->fetch();
+            if ($result) {
+                $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: Ya existe un usuario con ese nombre.']);
+            } else {
+                $data['usuario'] = filter_var($data['usuario'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                if (htmlspecialchars($data['usuario'], ENT_QUOTES, 'UTF-8') && $data['usuario']) {
+                    $data['password'] = filter_var($data['password'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                    if (htmlspecialchars($data['password'], ENT_QUOTES, 'UTF-8') && $data['password']) {
+                        $data['nombre'] = filter_var($data['nombre'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                        if (htmlspecialchars($data['nombre'], ENT_QUOTES, 'UTF-8') && $data['nombre']) {
+                            $data['apellidos'] = filter_var($data['apellidos'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
+                            if (htmlspecialchars($data['apellidos'], ENT_QUOTES, 'UTF-8') && $data['apellidos']) {
+                                $data['email'] = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
+                                if (htmlspecialchars($data['email'], ENT_QUOTES, 'UTF-8') && $data['email']) {
+                                    $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 4]);
+                                    $sql = "INSERT INTO senderismo.usuarios (usuario, pass, nombre, apellidos, email) VALUES (:usuario, :pass, :nombre, :apellidos, :email)";
+                                    $consult = $this->rutas->conexion->prepare($sql);
+                                    $consult->bindParam(':usuario', $data['usuario']);
+                                    $consult->bindParam(':pass', $data['password']);
+                                    $consult->bindParam(':nombre', $data['nombre']);
+                                    $consult->bindParam(':apellidos', $data['apellidos']);
+                                    $consult->bindParam(':email', $data['email']);
+                                    if ($consult->execute()) {
+                                        header('Location: index.php?controller=Rutas&action=verTodas');
+                                    } else {
+                                        header('Location: index.php?controller=Rutas&action=registrarse');
+                                    }
+                                } else {
+                                    $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: El formato del campo Email es incorrecto.']);
+                                }
+                            } else {
+                                $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: El formato del campo Apellidos es incorrecto.']);
+                            }
+                        } else {
+                            $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: El formato del campo Nombre es incorrecto.']);
+                        }
+                    } else {
+                        $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: El formato del campo Contraseña es incorrecto.']);
+                    }
+                } else {
+                    $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: El formato del campo Usuario es incorrecto.']);
+                }
+            }
+        } else {
+            header('Location: index.php?controller=Rutas&action=registrarse');
+        }
+    }
+
+    }
