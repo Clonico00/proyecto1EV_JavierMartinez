@@ -25,14 +25,14 @@ class RutasController
     {
         $campo = $_POST['campos'];
         $valor = $_POST['busquedaCampo'];
-        $sql = "SELECT * FROM senderismo.rutas WHERE $campo LIKE '%$valor%'";
+        $sql = "SELECT * FROM senderismo.rutas WHERE UPPER($campo) LIKE UPPER('%$valor%')";
         $consult = $this->rutas->conexion->prepare($sql);
         if ($consult->execute()) {
             $result = $consult->fetchAll();
             if ($result) {
                 $this->pages->render('../views/rutas/mostrar', ['rutas' => $result]);
             } else {
-                header('Location: index.php?controller=Rutas&action=verTodas');
+                echo "No se han encontrado resultados";
             }
         } else {
             header('Location: index.php?controller=Rutas&action=verTodas');

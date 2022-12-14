@@ -1,4 +1,4 @@
-<h3>Ruta: </h3>
+<h3>Rutas: </h3>
 <table border="2px">
     <thead>
     <tr>
