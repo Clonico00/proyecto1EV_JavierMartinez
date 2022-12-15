@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="../../styles/styles.css">
 
 <div class="table">
-    <h3>Comentaraios Ruta</h3>
+    <h3>Comentarios Ruta</h3>
     <table>
         <tr>
             <td>Titulo</td>
