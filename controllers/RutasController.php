@@ -18,14 +18,19 @@ class RutasController
 
     public function busqueda()
     {
+        // Comprobamos si se ha enviado el formulario
         $campo = $_POST['campos'];
         $valor = $_POST['busquedaCampo'];
+        // hacemos la validacion de los datos
         if (htmlspecialchars($valor, ENT_QUOTES, 'UTF-8')) {
             $valor = filter_var($valor, FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-ZñÑáéíóúÁÉÍÓÚ0-9\s]+$/")));
+            // hacemos la consulta
             $sql = "SELECT * FROM senderismo.rutas WHERE lower($campo) LIKE lower('%$valor%')";
             $consult = $this->rutas->conexion->prepare($sql);
+            // Ejecutamos la consulta
             if ($consult->execute()) {
                 $result = $consult->fetchAll();
+                // Comprobamos si hay resultados si no hay resultados mostramos un mensaje, si hay se los enviamos a la vista
                 if ($result) {
                     $this->pages->render('../views/rutas/mostrar', ['rutas' => $result]);
                 } else {
@@ -43,11 +48,12 @@ class RutasController
     public function eliminar()
     {
         $id = $_POST['id'];
-        /*eliminamos los comentarios asociados a esza ruta*/
+        // para borrar una ruta primero tenemos que borrar los comentarios que tenga debido a la clave foranea
         $sql = "DELETE FROM senderismo.rutas_comentarios WHERE id_ruta = :id";
         $consult = $this->rutas->conexion->prepare($sql);
         $consult->bindParam(':id', $id);
         if ($consult->execute()) {
+            // si se han borrado los comentarios procedemos a borrar la ruta
             $sql = "DELETE FROM senderismo.rutas WHERE senderismo.rutas.id = :id";
             $consult = $this->rutas->conexion->prepare($sql);
             $consult->bindParam(':id', $id);
@@ -65,6 +71,7 @@ class RutasController
     public function modificar()
     {
         $id = $_POST['id'];
+        //para modificar lka ruta la buscamos por el id
         $sql = "SELECT * FROM senderismo.rutas WHERE senderismo.rutas.id = :id";
         $consult = $this->rutas->conexion->prepare($sql);
         $consult->bindParam(':id', $id);
@@ -82,7 +89,9 @@ class RutasController
 
     public function actualizar()
     {
+        // comprobamos si se ha enviado el formulario
         $data = $_POST['data'];
+        // validamos todos los datos
         if (empty($data['titulo'])) {
             $this->pages->render('../views/rutas/modificar', ['error' => 'No se puede realizar la operación: el campo \'Título\' es obligatorio.']);
         } else if (empty($data['descripcion']) || empty($data['desnivel'])) {
@@ -96,6 +105,7 @@ class RutasController
                 if (htmlspecialchars($data['descripcion'], ENT_QUOTES, 'UTF-8') && $data['descripcion']) {
                     $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
                     if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8') && $data['desnivel']) {
+                        //una vez validados los datos procedemos a actualizar la ruta
                         $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, desnivel = :desnivel, distancia = :distancia, dificultad = :dificultad, notas = :notas WHERE senderismo.rutas.id = :id";
                         $consult = $this->rutas->conexion->prepare($sql);
                         $consult->bindParam(':id', $data['id']);
@@ -125,12 +135,14 @@ class RutasController
 
     public function verTodas()
     {
+        //iniciamo la sesion para poder acceder a las variables de sesion y comprobar si el usuario esta logueado
         session_start();
         $sql = "SELECT * FROM senderismo.rutas";
         $consult = $this->rutas->conexion->prepare($sql);
         if ($consult->execute()) {
             $result = $consult->fetchAll();
             if ($result) {
+                // si el usuario esta logeado le pasamos a la vista un parametro para que pueda ver el boton de modificar, comentar y eliminar
                 if (isset($_SESSION['usuario'])) {
                     $this->pages->render('../views/rutas/mostrarTodas', ['rutas' => $result, 'logeado' => true]);
                 } else {
@@ -151,7 +163,9 @@ class RutasController
 
     public function insertar()
     {
+        // comprobamos si se ha enviado el formulario
         $data = $_POST['data'];
+        // validamos todos los datos
         if (empty($data['titulo'])) {
             $this->pages->render('../views/rutas/crear', ['error' => 'No se puede realizar la operación: el campo \'Título\' es obligatorio.']);
         } else if (empty($data['descripcion']) || empty($data['desnivel'])) {
@@ -165,6 +179,7 @@ class RutasController
                 if (htmlspecialchars($data['descripcion'], ENT_QUOTES, 'UTF-8') && $data['descripcion']) {
                     $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
                     if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8') && $data['desnivel']) {
+                        //una vez validados los datos procedemos a insertar la ruta
                         $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
                         $consult = $this->rutas->conexion->prepare($sql);
                         $consult->bindParam(':titulo', $data['titulo']);
@@ -193,6 +208,7 @@ class RutasController
 
     public function comentar()
     {
+        // comprobamos si se ha enviado el formulario
         $id = $_POST['id'];
         $sql = "SELECT * FROM senderismo.rutas WHERE senderismo.rutas.id = :id";
         $consult = $this->rutas->conexion->prepare($sql);
@@ -223,6 +239,7 @@ class RutasController
 
     public function insertarComentario()
     {
+        // comprobamos si se ha enviado el formulario y hacemos una consulta para obtener los datos de la ruta
         $data = $_POST['data'];
         $sql = "SELECT * FROM senderismo.rutas_comentarios WHERE senderismo.rutas_comentarios.id_ruta = :id_ruta AND senderismo.rutas_comentarios.nombre = :nombre AND senderismo.rutas_comentarios.fecha = :fecha";
         $consult = $this->rutas->conexion->prepare($sql);
@@ -234,7 +251,7 @@ class RutasController
             if ($result) {
                 echo "<h3 style='color: red'>Ya existe un comentario con ese nombre y fecha</h3>";
             } else {
-                /*comprobamos que la fecha esta bien*/
+                //una vez validados los datos procedemos a insertar el comentario
                 if (preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $data['fecha'])) {
                     $data['nombre'] = filter_var($data['nombre'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
                     if (htmlspecialchars($data['nombre'], ENT_QUOTES, 'UTF-8') && $data['nombre']) {
@@ -275,15 +292,18 @@ class RutasController
 
     public function registro()
     {
+        // comprobamos si se ha enviado el formulario
         $data = $_POST['data'];
         $sql = "SELECT * FROM senderismo.usuarios WHERE senderismo.usuarios.usuario = :usuario";
         $consult = $this->rutas->conexion->prepare($sql);
         $consult->bindParam(':usuario', $data['usuario']);
         if ($consult->execute()) {
             $result = $consult->fetch();
+            //comprobamos que no exista el usuario
             if ($result) {
                 $this->pages->render('../views/rutas/registrarse', ['error' => 'ERROR: Ya existe un usuario con ese nombre.']);
             } else {
+                //una vez validados los datos procedemos a insertar el usuario
                 $data['usuario'] = filter_var($data['usuario'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
                 if (htmlspecialchars($data['usuario'], ENT_QUOTES, 'UTF-8') && $data['usuario']) {
                     $data['password'] = filter_var($data['password'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
@@ -294,6 +314,7 @@ class RutasController
                             if (htmlspecialchars($data['apellidos'], ENT_QUOTES, 'UTF-8') && $data['apellidos']) {
                                 $data['email'] = filter_var($data['email'], FILTER_VALIDATE_EMAIL);
                                 if (htmlspecialchars($data['email'], ENT_QUOTES, 'UTF-8') && $data['email']) {
+                                    //encriptamos la contraseña
                                     $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 4]);
                                     $sql = "INSERT INTO senderismo.usuarios (usuario, pass, nombre, apellidos, email) VALUES (:usuario, :pass, :nombre, :apellidos, :email)";
                                     $consult = $this->rutas->conexion->prepare($sql);
@@ -335,6 +356,7 @@ class RutasController
 
     public function login()
     {
+        //iniciamos la sesion
         session_start();
         $data = $_POST['data'];
         $sql = "SELECT * FROM senderismo.usuarios WHERE senderismo.usuarios.usuario = :usuario";
@@ -342,8 +364,11 @@ class RutasController
         $consult->bindParam(':usuario', $data['usuario']);
         if ($consult->execute()) {
             $result = $consult->fetch();
+            //comprobamos que exista el usuario
             if ($result) {
+                //comprobamos que la contraseña sea correcta
                 if (password_verify($data['password'], $result['pass'])) {
+                    //creamos la sesion
                     $_SESSION['usuario'] = $result['usuario'];
                     $_SESSION['nombre'] = $result['nombre'];
                     $_SESSION['apellidos'] = $result['apellidos'];
@@ -362,6 +387,7 @@ class RutasController
 
     public function logout()
     {
+        //iniciamos la sesion y la destruimos
         session_start();
         session_destroy();
         header('Location: index.php?controller=Rutas&action=verTodas');

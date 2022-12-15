@@ -45,9 +45,7 @@ CREATE TABLE IF NOT EXISTS usuarios
   DEFAULT CHARSET = utf8
   COLLATE = utf8_bin;
 
-INSERT INTO usuarios ( usuario, pass,nombre, apellidos, email) VALUES ('javi', '123456',  'javi', 'martinez garcia','javi@gmail.com');
-
-
+-- Datos de prueba para rutas
 INSERT INTO rutas (titulo, descripcion, desnivel, distancia, notas, dificultad)
 VALUES ('Ruta del Oso', 'Una emocionante ruta por el Parque Nacional de la Sierra de Guadarrama', 1200, 12.5, 'Llevar ropa y calzado adecuado', 3),
        ('Sendero de la Montaña', 'Un precioso sendero por los bosques de la sierra', 800, 8.0, 'Recomendable ir en grupo', 2),
@@ -55,12 +53,11 @@ VALUES ('Ruta del Oso', 'Una emocionante ruta por el Parque Nacional de la Sierr
        ('Ruta del Río', 'Una aventura por el río y sus cañones', 500, 15.0, 'Experiencia previa recomendable', 4),
        ('Sendero del Lago', 'Un sendero junto al lago con impresionantes vistas', 300, 6.8, 'No apto para personas con miedo a alturas', 2);
 
-/*hacemos un insert en rutas_comentarios para el id 2*/
+-- Datos de prueba para rutas_comentarios
 INSERT INTO rutas_comentarios (id_ruta, nombre, texto, fecha)
-VALUES (3, 'Juan', 'Un sendero precioso', '2018-01-01'),
-       (3, 'Ana', 'Un sendero precioso', '2018-01-01'),
-       (3, 'Pedro', 'Un sendero precioso', '2018-01-01'),
-       (3, 'Luis', 'Un sendero precioso', '2018-01-01');
+VALUES (1, 'Juan', 'Un sendero precioso', '2022-12-15'),
+       (2, 'Ana', 'Un sendero precioso', '2022-12-15'),
+       (3, 'Pedro', 'Un sendero precioso', '2022-12-15'),
+       (4, 'Luis', 'Un sendero precioso', '2022-12-15');
 
-/*hazme un select para saber si una cadena de texto se encuentra en algu valor de la columna descripcion usando like y que de igual si esta en mayuscula o minuscula*/
-SELECT * FROM rutas WHERE lower(descripcion) LIKE lower('%av%');
+-- No hay datos de prueba para usuarios ya que se crean en el registro con la contraseña encriptada

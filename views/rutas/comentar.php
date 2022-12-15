@@ -30,6 +30,7 @@
     </table>
 
     <?php
+    // inciamos la sesion para poder usar las variables de sesion
     session_start();
     ?>
     <div class="tablacomentarios">

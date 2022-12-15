@@ -1,5 +1,5 @@
 <?php
-//comprobamos que no haya errores
+//comprobamos que no haya errores si los hay los mostramos
 if (isset($error)) {
     echo "<h3 style='color: red'>$error</h3>";
 
