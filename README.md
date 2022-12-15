@@ -1,17 +1,27 @@
-# proyecto1EV_JavierMartinez
-PROYECTO SENDERISMO
-Se desea crear una web de rutas de senderismo con un aspecto parecido al siguiente:
+# Proyecto 1ª Evaluacion: Senderismo por Javier Martinez
+
+Se desea crear una web de rutas de senderismo.
+
 Observa que se ofrecen varios botones para gestionar las rutas: buscar ruta, añadir nueva ruta, mostrar las rutas guardadas (listado completo). Además, en cada ruta aparecen los botones que permiten modificar sus datos (Editar), borrar una ruta (Borrar) y añadir comentarios a la misma (Comentar).
+
 Notas de interés para el implementar el proyecto:
 a. La base de datos para trabajar en este proyecto se llamará “senderismo” y tendrá la siguiente estructura:
-• “rutas”, con los datos de las rutas, y
-• “rutas_comentarios”, que contiene los diferentes comentarios acerca de las mismas.
+
+  • “rutas”, con los datos de las rutas, y
+  • “rutas_comentarios”, que contiene los diferentes comentarios acerca de las mismas.
+
 b. La conexión a la base de datos será orientada a objetos. Preferiblemente PDO.
+
 c. Para la resolución del ejercicio se implementará el MVC y se valorará positivamente el uso del patrón Repository.
+
 d. Si deseas realizar el apartado “extra” deberás añadir a la base de dados senderismo una tabla que permita guardar los usuarios registrados . De cada usuario, se almacenará como mínimo sus datos personales, el nombre de usuario y la contraseña.
+
 e. No es necesario que el ejercicio vaya acompañado de un archivo CSS.
+
 f. Las imágenes presentadas, a continuación, no tienen por qué corresponder con el aspecto final de vuestra aplicación.
+
 Se pide:
+
 1. Añadir una ruta(botón Nueva ruta)
 2. Modificar una ruta, nos mostrará los datos de dicha ruta dando la oportunidad de modificarlos tras pulsar el botón de editar.
 Tanto en la opción Nueva ruta como en Editar:
