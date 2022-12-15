@@ -7,7 +7,8 @@ Observa que se ofrecen varios botones para gestionar las rutas: buscar ruta, añ
 Notas de interés para el implementar el proyecto:
 a. La base de datos para trabajar en este proyecto se llamará “senderismo” y tendrá la siguiente estructura:
 
-  • “rutas”, con los datos de las rutas, y
+  • “rutas”, con los datos de las rutas
+  
   • “rutas_comentarios”, que contiene los diferentes comentarios acerca de las mismas.
 
 b. La conexión a la base de datos será orientada a objetos. Preferiblemente PDO.
