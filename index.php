@@ -8,7 +8,8 @@ use \Controllers\FrontController;
 
 frontController::main();
 
-?>
+
+
 
 
 

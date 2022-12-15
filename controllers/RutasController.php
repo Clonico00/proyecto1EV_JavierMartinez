@@ -106,19 +106,31 @@ class RutasController
                     $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
                     if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8') && $data['desnivel']) {
                         //una vez validados los datos procedemos a actualizar la ruta
-                        $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, desnivel = :desnivel, distancia = :distancia, dificultad = :dificultad, notas = :notas WHERE senderismo.rutas.id = :id";
+                        //comprobamos que el titulo no exista ya en la base de datos
+                        $sql = "SELECT * FROM senderismo.rutas WHERE lower(titulo) = lower(:titulo)";
                         $consult = $this->rutas->conexion->prepare($sql);
-                        $consult->bindParam(':id', $data['id']);
                         $consult->bindParam(':titulo', $data['titulo']);
-                        $consult->bindParam(':descripcion', $data['descripcion']);
-                        $consult->bindParam(':desnivel', $data['desnivel']);
-                        $consult->bindParam(':distancia', $data['distancia']);
-                        $consult->bindParam(':dificultad', $data['dificultad']);
-                        $consult->bindParam(':notas', $data['notas']);
                         if ($consult->execute()) {
-                            header('Location: index.php?controller=Rutas&action=verTodas');
+                            $result = $consult->fetch();
+                            if ($result) {
+                                $this->pages->render('../views/rutas/modificar', ['error' => 'No se puede realizar la operación: el título ya existe.']);
+                            } else {
+                                // si no existe procedemos a actualizar la ruta
+                                $sql = "UPDATE senderismo.rutas SET titulo = :titulo, descripcion = :descripcion, distancia = :distancia, desnivel = :desnivel WHERE id = :id";
+                                $consult = $this->rutas->conexion->prepare($sql);
+                                $consult->bindParam(':titulo', $data['titulo']);
+                                $consult->bindParam(':descripcion', $data['descripcion']);
+                                $consult->bindParam(':distancia', $data['distancia']);
+                                $consult->bindParam(':desnivel', $data['desnivel']);
+                                $consult->bindParam(':id', $data['id']);
+                                if ($consult->execute()) {
+                                    header('Location: index.php?controller=Rutas&action=verTodas');
+                                } else {
+                                    $this->pages->render('../views/rutas/modificar', ['error' => 'No se ha podido realizar la operación.']);
+                                }
+                            }
                         } else {
-                            header('Location: index.php?controller=Rutas&action=verTodas');
+                            $this->pages->render('../views/rutas/modificar', ['error' => 'No se ha podido realizar la operación.']);
                         }
                     } else {
                         $this->pages->render('../views/rutas/modificar', ['error' => 'ERROR: El formato del campo Desnivel es incorrecto.']);
@@ -180,18 +192,31 @@ class RutasController
                     $data['desnivel'] = filter_var($data['desnivel'], FILTER_VALIDATE_REGEXP, array("options" => array("regexp" => "/^[a-zA-Z0-9\s]+$/")));
                     if (htmlspecialchars($data['desnivel'], ENT_QUOTES, 'UTF-8') && $data['desnivel']) {
                         //una vez validados los datos procedemos a insertar la ruta
-                        $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
+                        //comprobamos que no exista una ruta con el mismo titulo
+                        $sql = "SELECT * FROM senderismo.rutas WHERE titulo = :titulo";
                         $consult = $this->rutas->conexion->prepare($sql);
                         $consult->bindParam(':titulo', $data['titulo']);
-                        $consult->bindParam(':descripcion', $data['descripcion']);
-                        $consult->bindParam(':desnivel', $data['desnivel']);
-                        $consult->bindParam(':distancia', $data['distancia']);
-                        $consult->bindParam(':dificultad', $data['dificultad']);
-                        $consult->bindParam(':notas', $data['notas']);
                         if ($consult->execute()) {
-                            header('Location: index.php?controller=Rutas&action=verTodas');
+                            $result = $consult->fetchAll();
+                            if ($result) {
+                                $this->pages->render('../views/rutas/crear', ['error' => 'ERROR: Ya existe una ruta con el mismo título.']);
+                            } else {
+                                $sql = "INSERT INTO senderismo.rutas (titulo, descripcion, desnivel, distancia, dificultad, notas) VALUES (:titulo, :descripcion, :desnivel, :distancia, :dificultad, :notas)";
+                                $consult = $this->rutas->conexion->prepare($sql);
+                                $consult->bindParam(':titulo', $data['titulo']);
+                                $consult->bindParam(':descripcion', $data['descripcion']);
+                                $consult->bindParam(':desnivel', $data['desnivel']);
+                                $consult->bindParam(':distancia', $data['distancia']);
+                                $consult->bindParam(':dificultad', $data['dificultad']);
+                                $consult->bindParam(':notas', $data['notas']);
+                                if ($consult->execute()) {
+                                    header('Location: index.php?controller=Rutas&action=verTodas');
+                                } else {
+                                    $this->pages->render('../views/rutas/crear', ['error' => 'ERROR: No se ha podido insertar la ruta.']);
+                                }
+                            }
                         } else {
-                            header('Location: index.php?controller=Rutas&action=verTodas');
+                            $this->pages->render('../views/rutas/crear', ['error' => 'ERROR: No se ha podido insertar la ruta.']);
                         }
                     } else {
                         $this->pages->render('../views/rutas/crear', ['error' => 'ERROR: El formato del campo Desnivel es incorrecto.']);
